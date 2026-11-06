@@ -2,8 +2,7 @@ import pg from "pg";
 
 const { Pool } = pg;
 for (const nama of ["PGHOST", "PGPORT", "PGDATABASE", "PGUSER", "PGPASSWORD"]) {
-  if (nama !== "PGPASSWORD" && !process.env[nama])
-    throw new Error(`Konfigurasi ${nama} belum diisi.`);
+  if (!process.env[nama]) throw new Error(`Konfigurasi ${nama} belum diisi.`);
 }
 
 export const pool = new Pool({

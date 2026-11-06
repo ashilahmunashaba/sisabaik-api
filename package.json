@@ -5,16 +5,20 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file=.env --watch server.js",
-    "start": "node -- env-file =. env server. js",
-    "db: check": "node -- env-file =. env scripts/check-db. js",
-    "db: order": "node -- env-file =. env scripts/create-order.js",
+    "start": "node --env-file=.env server.js",
+    "db:check": "node --env-file=.env scripts/check-db.js",
+    "db:order": "node --env-file=.env scripts/create-order.js",
     "api:test": "node scripts/uji-api.js"
   },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.7.3",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3"
   }
 }
