@@ -1,122 +1,350 @@
-# Sisabaik API
+﻿# SisaBaik API - Sistem Pengelolaan Makanan Berlebih
 
-REST API untuk aplikasi Sisabaik yang dibangun menggunakan Node.js, Express 5, dan PostgreSQL. Proyek ini merupakan pengembangan dari database pada Chapter 6.
+Kesempatan kedua untuk makanan yang masih bernilai.
 
-## 1. Prasyarat
+## Deskripsi
 
-Pastikan perangkat sudah memiliki:
+SisaBaik adalah platform yang menghubungkan makanan berlebih yang masih layak konsumsi dengan orang yang membutuhkannya. Aplikasi ini terdiri dari:
 
-- Node.js versi 22 atau lebih baru.
-- npm.
-- PostgreSQL yang sudah terpasang dan berjalan.
-- Database `sisabaik_dev` beserta tabel dan data awal dari Chapter 6.
-- Visual Studio Code untuk mengelola proyek.
+- **Backend REST API** (Node.js + Express + PostgreSQL) - Chapter 5-8
+- **Frontend Vue.js** (Vue 3 + Vite) - Chapter 9
 
-## 2. Instalasi
+## Teknologi
 
-Buka terminal pada root folder proyek `sisabaik-api`, kemudian jalankan:
+### Backend
 
-```bash
+- Node.js ≥ 22.0.0
+- Express 5.1.0
+- PostgreSQL (lokal)
+- JWT untuk autentikasi
+- bcryptjs untuk hashing password
+
+### Frontend
+
+- Vue 3.5.43
+- Vite 8.3.3
+- Single File Components dengan Composition API
+
+## Persyaratan Sistem
+
+- **Node.js**: 22.18.0 atau lebih baru (untuk backend)
+- **Node.js**: 22.18.0 atau ≥24.12.0 (untuk frontend)
+- **npm**: 10.x atau lebih baru
+- **PostgreSQL**: 14.x atau lebih baru
+- **Browser**: Chrome, Firefox, Edge, atau Safari versi terbaru
+
+## Instalasi
+
+### Backend
+
+\\Terminal
+
+# Install dependencies
+
 npm install
-```
 
-Pastikan file `.env` sudah tersedia dan konfigurasi koneksi PostgreSQL sesuai dengan database lokal yang digunakan. Gunakan `.env.example` sebagai acuan konfigurasi.
+# Atau untuk reproduksi exact versions
 
-## 3. Memeriksa Database
+npm ci
 
-Jalankan perintah berikut untuk memeriksa koneksi database:
+# Setup database (ikuti instruksi di database/README.md atau modul)
 
-```bash
-npm run db:check -- 0
-```
+psql -h localhost -U postgres -d sisabaik_dev -f database/01_schema.sql
+psql -h localhost -U postgres -d sisabaik_dev -f database/02_seed.sql
+psql -h localhost -U postgres -d sisabaik_dev -f database/07_auth.sql
 
-Pastikan database `sisabaik_dev` dapat diakses dan tabel dari Chapter 6 tersedia.
+# Copy .env.example ke .env dan isi konfigurasi
 
-Jangan menjalankan ulang file schema yang menghapus tabel atau data tanpa memastikan tindakan tersebut memang diperlukan.
+cp .env.example .env
 
-## 4. Menjalankan Server
+# Edit .env: PGPASSWORD, JWT_SECRET
 
-Jalankan server pengembangan menggunakan:
+\\
 
-```bash
+### Frontend
+
+\\Terminal
+cd frontend
+npm install
+
+# Atau untuk reproduksi exact versions
+
+npm ci
+\\
+
+## Menjalankan Aplikasi
+
+### Backend (Development)
+
+\\Terminal
+
+# Dari root project
+
 npm run dev
-```
 
-Biarkan terminal tetap berjalan selama API digunakan. Server berjalan secara lokal sesuai konfigurasi proyek.
+# Server berjalan di http://127.0.0.1:3000
 
-## 5. Pengujian API
+\\
 
-Untuk menjalankan pengujian API, buka terminal kedua pada root folder proyek dan jalankan:
+### Frontend (Development)
 
-```bash
-npm run api:test -- http://127.0.0.1:3000
-```
+\\Terminal
 
-Pastikan server sudah berjalan sebelum pengujian dimulai.
+# Dari folder frontend
 
-Untuk menguji konkurensi pembelian ketika stok hanya tersisa satu, jalankan:
+cd frontend
+npm run dev
 
-```bash
-node scripts/uji-konkurensi.js
-```
+# Server berjalan di http://127.0.0.1:5173
 
-Pengujian konkurensi diharapkan menghasilkan satu permintaan berhasil dengan status HTTP `201` dan satu permintaan ditolak dengan status HTTP `409`. Stok akhir harus bernilai `0`.
+\\
 
-Pengujian ini hanya dilakukan pada server lokal untuk keperluan latihan.
+### Frontend (Production Build & Preview)
 
-## 6. Format Request Pesanan
+\\Terminal
+cd frontend
 
-Request pembuatan pesanan menggunakan field `emailPembeli` untuk mengidentifikasi pembeli.
+# Build untuk production
 
-Contoh struktur request:
+npm run build
 
-```json
-{
-  "emailPembeli": "siti.pembeli@example.test",
-  "items": [
-    {
-      "penawaranId": 1,
-      "kuantitas": 1
-    }
-  ]
-}
-```
+# Preview hasil build
 
-Sesuaikan ID penawaran dengan data yang tersedia pada database latihan.
+npm run preview
 
-## 7. Kebijakan ID
+# Preview berjalan di http://127.0.0.1:4173
 
-ID pada response API diperlakukan sebagai nilai yang dapat dikirim dalam bentuk string oleh client. Client perlu mempertahankan ID sebagaimana diterima dari API dan tidak mengasumsikan bahwa semua ID harus berupa angka JavaScript.
+\\
 
-## 8. Struktur Proyek
+## Struktur Project
 
-```text
+\\
 sisabaik-api/
-├── database/
-├── public/
-├── scripts/
-│   ├── check-db.js
-│   ├── create-order.js
-│   ├── uji-api.js
-│   └── uji-konkurensi.js
-├── src/
-│   ├── controllers/
-│   ├── db/
-│   ├── lib/
-│   ├── middleware/
-│   ├── repositories/
-│   ├── routes/
-│   └── services/
-├── .env
-├── .env.example
-├── package.json
-├── package-lock.json
-├── server.js
-└── README.md
-```
+├── src/ # Backend source code
+│ ├── config/ # Konfigurasi (auth)
+│ ├── controllers/ # Request handlers
+│ ├── db/ # Database connection
+│ ├── lib/ # Helper functions
+│ ├── middleware/ # Express middleware
+│ ├── repositories/ # Data access layer
+│ ├── routes/ # API routes
+│ ├── services/ # Business logic
+│ └── app.js # Express app configuration
+├── frontend/ # Frontend Vue.js
+│ ├── src/
+│ │ ├── assets/ # SVG illustrations (4 files)
+│ │ ├── components/ # Vue components
+│ │ ├── data/ # Fixture data (memory-only)
+│ │ ├── lib/ # Helper functions
+│ │ ├── App.vue # Root component
+│ │ ├── main.js # Vue app entry
+│ │ └── style.css # Global styles
+│ ├── index.html # HTML template
+│ └── package.json # Frontend dependencies
+├── database/ # SQL migration files
+├── scripts/ # Helper scripts
+├── public/ # Static files (Chapter 7-8)
+├── docs/ # Documentation
+├── server.js # Server entry point
+└── package.json # Backend dependencies
+\\
 
-## 9. Batasan Aplikasi
+## Aset Visual (Frontend Chapter 9)
 
-Aplikasi ini masih digunakan secara lokal untuk keperluan pembelajaran. Autentikasi dan otorisasi pengguna belum diimplementasikan.
+Frontend Chapter 9 menggunakan **4 file SVG lokal** yang disimpan di Frontend/src/assets/:
 
-Jangan menggunakan aplikasi ini untuk menangani data atau transaksi nyata sebelum mekanisme keamanan yang diperlukan diterapkan.
+1. **brand-mark.svg** - Logo SisaBaik
+2. **food-bread.svg** - Ilustrasi kategori roti & kue
+3. **food-bowl.svg** - Ilustrasi makanan siap saji
+4. **food-produce.svg** - Ilustrasi bahan segar
+
+Ilustrasi digunakan sebagai gambar default untuk setiap kategori penawaran.
+
+## Catatan Penting Chapter 9
+
+### Data Fixture di Memori
+
+Frontend Chapter 9 menggunakan **data fixture dalam memori** (Frontend/src/data/penawaran-latihan.js):
+
+- **6 penawaran fixture** dengan berbagai status (aktif, draft, habis, lewat waktu)
+- Data **hanya tersimpan di browser** dan **hilang saat refresh**
+- **Tidak ada koneksi ke API backend** pada Chapter 9
+- Tujuan: Fokus pembelajaran komponen Vue tanpa kompleksitas API
+
+### Fitur Chapter 9
+
+**Mode Pembeli:**
+
+- Katalog penawaran dengan filter pencarian & kategori
+- Kartu penawaran dengan ilustrasi, harga, diskon, dan countdown
+- Ringkasan ketersediaan (penawaran tersedia, unit, penyedia)
+- Empty state ketika filter tidak cocok
+- Pilihan makanan (tanpa checkout nyata)
+
+**Mode Penyedia (Simulasi Penyedia Rina):**
+
+- Form penawaran baru dengan validasi lengkap
+- Daftar penawaran milik penyedia (semua status)
+- Ringkasan: total penawaran, tersedia, unit tersedia
+- Validasi form: harga, stok, tanggal masa depan
+
+### Integrasi Backend (Belum di Chapter 9)
+
+Backend dari Chapter 5-8 tetap tersedia dengan fitur:
+
+- ✅ Pendaftaran mandiri pembeli & penyedia
+- ✅ Verifikasi profil penyedia (melalui script CLI)
+- ✅ Login dengan JWT (15 menit expiry)
+- ✅ Autentikasi & otorisasi berbasis peran
+- ✅ CRUD penawaran (hanya penyedia terverifikasi)
+- ✅ CRUD pesanan (dengan transaksi atomik & row locking)
+- ✅ Validasi berlapis & keamanan (helmet, rate limiting)
+
+**Integrasi frontend-backend akan dilakukan pada Chapter 10-11** dengan:
+
+- Fetch API untuk komunikasi client-server
+- State management untuk data dari server
+- Session handling dengan JWT
+- Error handling untuk response API
+
+## API Endpoints (Backend Chapter 7-8)
+
+### Public
+
+- \GET /api/health\ - Health check
+- \GET /api/penawaran\ - Daftar penawaran (publik)
+- \GET /api/penawaran/:id\ - Detail penawaran
+
+### Authentication
+
+- \POST /api/auth/registrasi\ - Daftar pembeli
+- \POST /api/auth/registrasi-penyedia\ - Daftar penyedia
+- \POST /api/auth/login\ - Login
+- \GET /api/auth/saya\ - Profil akun (requires auth)
+- \POST /api/auth/logout\ - Logout (requires auth)
+
+### Penawaran (Requires Authentication)
+
+- \GET /api/penawaran/milik-saya\ - Daftar penawaran milik sendiri
+- \POST /api/penawaran\ - Buat penawaran (penyedia terverifikasi)
+- \PUT /api/penawaran/:id\ - Update penawaran (pemilik)
+- \DELETE /api/penawaran/:id\ - Hapus penawaran (pemilik)
+
+### Pesanan (Requires Authentication)
+
+- \GET /api/pesanan\ - Daftar pesanan sendiri
+- \GET /api/pesanan/:id\ - Detail pesanan
+- \POST /api/pesanan\ - Buat pesanan (pembeli)
+
+## Testing
+
+\\Terminal
+
+# Backend
+
+npm run api:test # Test API endpoints (Chapter 7)
+
+# Frontend - Manual testing
+
+cd frontend
+npm run dev
+
+# Buka http://127.0.0.1:5173
+
+# Test: filter, form validation, state changes
+
+# Frontend - Build verification
+
+npm run build
+npm run preview
+
+# Verifikasi compilation success
+
+\\
+
+## Scripts npm
+
+### Backend (Root)
+
+\\Terminal
+npm run dev # Development dengan watch mode
+npm start # Production mode
+npm run db:check # Cek koneksi database
+npm run db:order # Test transaksi pesanan
+npm run api:test # Test API endpoints
+\\
+
+### Frontend
+
+\\Terminal
+npm run dev # Development server (5173)
+npm run build # Production build
+npm run preview # Preview build (4173)
+\\
+
+## Environment Variables
+
+Backend memerlukan file .env (lihat .env.example):
+
+\\env
+PORT=3000
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=sisabaik_dev
+PGUSER=postgres
+PGPASSWORD=your_password_here
+JWT_SECRET=your_64_hex_chars_here
+\\
+
+**Catatan Keamanan:**
+
+- .env sudah masuk .gitignore
+- Jangan commit password, JWT secret, atau hash
+- Generate JWT_SECRET: \
+  ode -e "console.log(require('crypto').randomBytes(32).toString('hex'))"\
+
+## Git Workflow
+
+\\Terminal
+
+# Cek status
+
+git status
+
+# Pastikan node_modules & dist tidak tracked
+
+git check-ignore frontend/node_modules frontend/dist
+
+# Stage perubahan
+
+git add frontend README.md docs/
+
+# Review sebelum commit
+
+git diff --staged
+
+# Commit
+
+git commit -m "feat: descriptive message"
+\\
+
+## Dokumentasi Tambahan
+
+- \docs/hasil-uji-chapter9.md\ - Hasil pengujian Chapter 9
+- \database/\ - SQL schema dan migration files
+- Modul lengkap tersedia di folder \modul/\
+
+## Lisensi
+
+Project ini dibuat untuk keperluan pembelajaran mata kuliah Pengembangan Web - DGT1.62.7009, Program Studi Bisnis Digital, Semester Ganjil 2026/2027.
+
+## Kontributor
+
+- Nama: [NAMA_MAHASISWA]
+- NIM: [NIM_MAHASISWA]
+- Dosen Pengampu: Randi Proska Sandra
+
+---
+
+**Versi:** 1.0.1 (Frontend Chapter 9)  
+**Terakhir diperbarui:** November 2026
